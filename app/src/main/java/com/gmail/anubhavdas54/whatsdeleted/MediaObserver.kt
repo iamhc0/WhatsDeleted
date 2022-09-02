@@ -50,7 +50,7 @@ private fun getWhatsappRootFolder(): String {
     )
 
     if (target1.exists() && target2.listFiles() != null && target1.listFiles().size > 1) {
-        root = Environment.getExternalStorageDirectory().absolutePath
+        root = Environment.getExternalStorageDirectory().absolutePath+"/WhatsApp/Media"
     } else if (target2.exists() && target2.listFiles() != null && target2.listFiles().size > 1) {
         root =
             Environment.getExternalStorageDirectory().absolutePath + "/Android/media/com.whatsapp/WhatsApp/Media"
