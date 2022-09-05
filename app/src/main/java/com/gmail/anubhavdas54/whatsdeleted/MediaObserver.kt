@@ -9,14 +9,13 @@ private const val TAG = "MediaObserver"
 
 
 class MediaObserver : FileObserver(
-    File(
-        getWhatsappRootFolder() + "${File.separator}WhatsApp Images"
-    ).toString(), ALL_EVENTS
+    getWhatsappRootFolder() + "${File.separator}WhatsApp Images", ALL_EVENTS
 ) {
 
     override fun onEvent(event: Int, path: String?) {
-
+        Log.d(TAG, "onEvent-Code: $event")
         if (event == MOVED_TO) {
+            Log.d(TAG, "onEvent: Move To")
             try {
                 val srcFile = File(
                     getWhatsappRootFolder() + "${File.separator}WhatsApp Images${File.separator}$path"
@@ -49,13 +48,14 @@ private fun getWhatsappRootFolder(): String {
         "/Android/media/com.whatsapp/WhatsApp/Media"
     )
 
-    if (target1.exists() && target2.listFiles() != null && target1.listFiles().size > 1) {
-        root = Environment.getExternalStorageDirectory().absolutePath+"/WhatsApp/Media"
+    if (target1.exists() && target1.listFiles() != null && target1.listFiles().size > 1) {
+        root = Environment.getExternalStorageDirectory().absolutePath + "/WhatsApp/Media"
     } else if (target2.exists() && target2.listFiles() != null && target2.listFiles().size > 1) {
         root =
             Environment.getExternalStorageDirectory().absolutePath + "/Android/media/com.whatsapp/WhatsApp/Media"
 
     }
+    Log.d(TAG, "getWhatsappRootFolder Path: $root")
     return root
 
 }
