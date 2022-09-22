@@ -8,29 +8,34 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import java.io.File
-import java.lang.Exception
-import android.content.res.Configuration
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.*
+import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.google.android.material.switchmaterial.SwitchMaterial
+import java.io.File
 
 private const val MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 0
+lateinit var notificationListenerSwitch: SwitchMaterial
 
 class MainActivity : AppCompatActivity() {
 
     private val msgLogFileName = "msgLog.txt"
     private val signalMsgLogFileName = "signalMsgLog.txt"
-    private val whatsDeleted = File(Environment.getExternalStorageDirectory(),
-        "WhatsDeleted${File.separator}WhatsDeleted Images")
+    private val whatsDeleted = File(
+        Environment.getExternalStorageDirectory(),
+        "WhatsDeleted${File.separator}WhatsDeleted Images"
+    )
 
     private val checkEmoji = String(Character.toChars(0x2714))
     private val crossEmoji = String(Character.toChars(0x274C))
@@ -46,15 +51,21 @@ class MainActivity : AppCompatActivity() {
         val viewSignalLogBtn = findViewById<Button>(R.id.view_signal_log_btn)
         val imgDirDelBtn = findViewById<Button>(R.id.img_dir_del_btn)
         val medObsSwitch = findViewById<SwitchMaterial>(R.id.med_obs_switch)
-        val notificationListenerSwitch = findViewById<SwitchMaterial>(R.id.notification_listener_switch)
+        notificationListenerSwitch =
+            findViewById<SwitchMaterial>(R.id.notification_listener_switch)
         val test = findViewById<LinearLayout>(R.id.test)
 
         // TextView
-        msgLogStatus.text = getString(R.string.msg_log_status_str,
+        msgLogStatus.text = getString(
+            R.string.msg_log_status_str,
             if (File(this.filesDir, msgLogFileName).exists()
-                && File(this.filesDir, signalMsgLogFileName).exists()) checkEmoji else crossEmoji)
-        imgDirStatus.text = getString(R.string.img_dir_status_str,
-            if (whatsDeleted.exists()) checkEmoji else crossEmoji)
+                && File(this.filesDir, signalMsgLogFileName).exists()
+            ) checkEmoji else crossEmoji
+        )
+        imgDirStatus.text = getString(
+            R.string.img_dir_status_str,
+            if (whatsDeleted.exists()) checkEmoji else crossEmoji
+        )
 
         // Button
         // DRY
@@ -70,7 +81,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        imgDirDelBtn.setOnClickListener{
+        imgDirDelBtn.setOnClickListener {
             AlertDialogHelper.showDialog(
                 this@MainActivity,
                 getString(R.string.del_backup_img),
@@ -109,8 +120,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Request Storage Permission
-        requestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE)
+        requestPermission(
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE
+        )
 
         // Media Observer Service
         val mediaObserverService = Intent(this, MediaObserverService::class.java)
@@ -120,37 +133,22 @@ class MainActivity : AppCompatActivity() {
         medObsSwitch.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 startService(mediaObserverService)
-                Toast.makeText(applicationContext, getString(R.string.started), Toast.LENGTH_SHORT).show()
-            }
-            else {
+                Toast.makeText(applicationContext, getString(R.string.started), Toast.LENGTH_SHORT)
+                    .show()
+            } else {
                 stopService(mediaObserverService)
-                Toast.makeText(applicationContext, getString(R.string.stopped), Toast.LENGTH_SHORT).show()
+                Toast.makeText(applicationContext, getString(R.string.stopped), Toast.LENGTH_SHORT)
+                    .show()
             }
         }
 
         notificationListenerSwitch.isChecked = isServiceRunning(NotificationListener::class.java)
         notificationListenerSwitch.isClickable = false
         test.setOnClickListener {
-            if (notificationListenerSwitch.isChecked) {
-                AlertDialogHelper.showDialog(
-                    this@MainActivity,
-                    "Turn off",
-                    "Settings > Apps  & notifications > Special app access > " +
-                            "Notification Access > WhatsDeleted > Turn Off",
-                    getString(R.string.ok),
-                    null
-                ) { dialog, _ -> dialog.cancel() }
+            if (!notificationListenerSwitch.isChecked) {
+                startNotificationAccess()
             }
-            else {
-                AlertDialogHelper.showDialog(
-                    this@MainActivity,
-                    "Turn on",
-                    "Settings > Apps & notifications > Special app access > " +
-                            "Notification Access > WhatsDeleted > Allow",
-                    getString(R.string.ok),
-                    null
-                ) { dialog, _ -> dialog.cancel() }
-            }
+
         }
     }
 
@@ -167,28 +165,39 @@ class MainActivity : AppCompatActivity() {
     private fun createBackups() {
         if (!whatsDeleted.exists()) {
             if (!whatsDeleted.mkdirs())
-                Toast.makeText(applicationContext, getString(R.string.create_backup_dir_failed),
-                    Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    applicationContext, getString(R.string.create_backup_dir_failed),
+                    Toast.LENGTH_SHORT
+                ).show()
         }
         if (!File(this.filesDir, msgLogFileName).exists()) {
             if (!File(this.filesDir, msgLogFileName).createNewFile())
-                Toast.makeText(applicationContext, getString(R.string.create_msg_log_failed),
-                    Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    applicationContext, getString(R.string.create_msg_log_failed),
+                    Toast.LENGTH_SHORT
+                ).show()
         }
 
         if (!File(this.filesDir, signalMsgLogFileName).exists()) {
             if (!File(this.filesDir, signalMsgLogFileName).createNewFile())
-                Toast.makeText(applicationContext, getString(R.string.create_msg_log_failed),
-                    Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    applicationContext, getString(R.string.create_msg_log_failed),
+                    Toast.LENGTH_SHORT
+                ).show()
         }
     }
 
     @Suppress("SameParameterValue")
     private fun requestPermission(permission: String, requestCode: Int) {
-        if (ContextCompat.checkSelfPermission(this@MainActivity,
-                permission) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this@MainActivity,
-                arrayOf(permission), requestCode)
+        if (ContextCompat.checkSelfPermission(
+                this@MainActivity,
+                permission
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this@MainActivity,
+                arrayOf(permission), requestCode
+            )
         } else {
             createBackups()
         }
@@ -203,10 +212,18 @@ class MainActivity : AppCompatActivity() {
 
         if (requestCode == MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE) {
             if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                Toast.makeText(applicationContext, getString(R.string.create_backup_dir), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    applicationContext,
+                    getString(R.string.create_backup_dir),
+                    Toast.LENGTH_SHORT
+                ).show()
                 createBackups()
             } else {
-                Toast.makeText(applicationContext, getString(R.string.allow_storage_permission_msg), Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    applicationContext,
+                    getString(R.string.allow_storage_permission_msg),
+                    Toast.LENGTH_LONG
+                ).show()
             }
             return
         }
@@ -223,9 +240,11 @@ class MainActivity : AppCompatActivity() {
         if (f.isDirectory) {
             for (child in f.listFiles()) {
                 if (!child.deleteRecursively())
-                    Toast.makeText(applicationContext,
+                    Toast.makeText(
+                        applicationContext,
                         getString(R.string.unable_to_delete, child.toString()),
-                        Toast.LENGTH_SHORT).show()
+                        Toast.LENGTH_SHORT
+                    ).show()
             }
         }
     }
@@ -254,6 +273,15 @@ class MainActivity : AppCompatActivity() {
                 return true
             }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == REQUEST_CODE_NOTIFICATION_PERMISSION) {
+            notificationListenerSwitch.isChecked = hasNotificationAccess()
+
         }
     }
 }
