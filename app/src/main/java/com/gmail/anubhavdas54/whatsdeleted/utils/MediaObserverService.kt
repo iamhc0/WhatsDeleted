@@ -1,4 +1,4 @@
-package com.gmail.anubhavdas54.whatsdeleted
+package com.gmail.anubhavdas54.whatsdeleted.utils
 
 import android.app.Notification
 import android.app.PendingIntent
@@ -6,6 +6,8 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
+import com.gmail.anubhavdas54.whatsdeleted.ui.MainActivity
+import com.gmail.anubhavdas54.whatsdeleted.R
 
 class MediaObserverService : Service() {
 

@@ -1,4 +1,4 @@
-package com.gmail.anubhavdas54.whatsdeleted
+package com.gmail.anubhavdas54.whatsdeleted.utils
 
 import android.app.Notification
 import android.service.notification.NotificationListenerService

@@ -1,4 +1,4 @@
-package com.gmail.anubhavdas54.whatsdeleted
+package com.gmail.anubhavdas54.whatsdeleted.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -6,6 +6,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.gmail.anubhavdas54.whatsdeleted.R
+import com.gmail.anubhavdas54.whatsdeleted.utils.AlertDialogHelper
 import kotlinx.android.synthetic.main.activity_msg_log_viewer.*
 import java.io.File
 import java.io.PrintWriter

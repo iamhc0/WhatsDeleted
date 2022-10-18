@@ -1,4 +1,4 @@
-package com.gmail.anubhavdas54.whatsdeleted
+package com.gmail.anubhavdas54.whatsdeleted.utils
 
 import android.content.Context
 import android.content.DialogInterface
