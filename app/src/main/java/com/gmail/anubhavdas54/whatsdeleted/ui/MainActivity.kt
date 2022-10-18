@@ -17,7 +17,6 @@ import androidx.activity.result.contract.ActivityResultContracts.StartActivityFo
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.gmail.anubhavdas54.whatsdeleted.R
 import com.gmail.anubhavdas54.whatsdeleted.databinding.ActivityMainBinding
 import com.gmail.anubhavdas54.whatsdeleted.utils.*
@@ -43,9 +42,6 @@ class MainActivity : AppCompatActivity() {
     private fun ActivityMainBinding.init() {
         setWhatsAppRootFolderMedia()
         initListener()
-        // TextView
-
-        // Notification Channel
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             createNotificationChannel(
                 "mediaObserver",
@@ -63,16 +59,13 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-
         if (!checkPermissionsWithPersisted(true))
-            requestForPermissionsPersisted(activityResultLauncher,true)
+            requestForPermissionsPersisted(activityResultLauncher, true)
 
 
     }
 
     private fun ActivityMainBinding.initListener() {
-        // Button
-        // DRY
         viewWaLogBtn.setOnClickListener {
             val intent = Intent(activity, MsgLogViewerActivity::class.java)
             intent.putExtra("app", "whatsapp")
@@ -118,7 +111,7 @@ class MainActivity : AppCompatActivity() {
                     .show()
             }
         }
-        val isNotificationListenerService = isServiceRunning(NotificationListener::class.java)
+        val isNotificationListenerService = hasNotificationAccess()
         notificationListenerSwitch.isChecked = isNotificationListenerService
         notificationListenerSwitch.isClickable = false
         test.setOnClickListener {
@@ -129,8 +122,6 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
-
-
 
 
     override fun onRequestPermissionsResult(
