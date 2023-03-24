@@ -99,11 +99,18 @@ fun AppCompatActivity.requestPermissionQ(
 }
 
 
-fun AppCompatActivity.checkPermissionsWithPersisted(checkWritePermission: Boolean = false): Boolean {
+fun AppCompatActivity.checkPermissionsWithPersisted(
+    checkWritePermission: Boolean = false,
+    directory: String = StatusDir
+): Boolean {
     return if (isRPlus()) {
-        if (!checkWritePermission)
-            contentResolver.persistedUriPermissions.size > 0
-        else
+        if (!checkWritePermission) {
+            val list = contentResolver.persistedUriPermissions
+            val uriPermission = list.find {
+                it.uri.toString().contains(directory)
+            }
+            return uriPermission != null
+        } else
             hasPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     } else
         hasPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
