@@ -73,7 +73,7 @@ fun AppCompatActivity.requestForPermissionsPersisted(
 
 const val RootTreeDir = "content://com.android.externalstorage.documents/tree/primary%3A"
 const val StatusDir = "Android%2Fmedia%2Fcom.whatsapp%2FWhatsApp%2FMedia%2F.Statuses"
-const val MediaDir = "Android%2Fmedia%2Fcom.whatsapp%2FWhatsApp%2FMedia%2F"
+const val MediaDir = "Android%2Fmedia%2Fcom.whatsapp%2FWhatsApp%2FMedia"
 
 
 @RequiresApi(Build.VERSION_CODES.Q)
