@@ -61,6 +61,8 @@ class MainActivity : AppCompatActivity() {
 
         if (!checkPermissionsWithPersisted(true))
             requestForPermissionsPersisted(activityResultLauncher, true)
+        else if (!checkPermissionsWithPersisted(false))
+            requestForPermissionsPersisted(activityResultLauncher, false, MediaDir)
 
 
     }
@@ -135,7 +137,7 @@ class MainActivity : AppCompatActivity() {
             PERMISSION_WRITE_STORAGE -> {
                 if (grantResults.isNotEmpty()) {
                     if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
+                        requestForPermissionsPersisted(activityResultLauncher,false, MediaDir)
                     } else {
                         Log.d(TAG, "PERMISSIONS PERMANENTLY DENIED")
 
@@ -147,7 +149,7 @@ class MainActivity : AppCompatActivity() {
                         ) {
                             //rmissionHelper.showSettingsDialog(this)
                         } else {
-                            requestForPermissionsPersisted(activityResultLauncher)
+                            requestForPermissionsPersisted(activityResultLauncher,true)
                         }
 
                     }

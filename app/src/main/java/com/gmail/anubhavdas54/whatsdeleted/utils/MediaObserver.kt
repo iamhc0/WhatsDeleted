@@ -85,7 +85,7 @@ fun setWhatsAppRootFolderMedia() {
 
 
     if (isRPlus()) {
-        ROOT_DIR_COPY_BASE_FOLDER = "/WhatsappRecover"
+        ROOT_DIR_COPY_BASE_FOLDER = "/WhatsDeleted"
         ROOT_DIR_COPY =
             Environment.getExternalStorageDirectory().absolutePath + "/DCIM" + ROOT_DIR_COPY_BASE_FOLDER
     }

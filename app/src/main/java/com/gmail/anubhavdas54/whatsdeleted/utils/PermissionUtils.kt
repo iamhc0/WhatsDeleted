@@ -25,7 +25,6 @@ import androidx.core.content.ContextCompat
 
 const val REQUEST_CODE_NOTIFICATION_PERMISSION = 222
 const val PERMISSION_WRITE_STORAGE = 111
-fun isRPlus() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
 
 
 fun AppCompatActivity.startNotificationAccess() {
@@ -42,15 +41,24 @@ fun Context.hasNotificationAccess(): Boolean {
 }
 
 
-
 fun AppCompatActivity.requestForPermissionsPersisted(
     activityResultLauncher: ActivityResultLauncher<Intent>,
-    check: Boolean = false
+    checkWritePermission: Boolean = false, directory: String = StatusDir
 ) {
     // If Android 10+
     if (isRPlus()) {
-        if (check)
-            requestPermissionQ(activityResultLauncher)
+        if (!checkWritePermission)
+            requestPermissionQ(activityResultLauncher, directory)
+        else
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ),
+                PERMISSION_WRITE_STORAGE
+            )
+
     } else
         ActivityCompat.requestPermissions(
             this,
@@ -63,19 +71,26 @@ fun AppCompatActivity.requestForPermissionsPersisted(
 }
 
 
+const val RootTreeDir = "content://com.android.externalstorage.documents/tree/primary%3A"
+const val StatusDir = "Android%2Fmedia%2Fcom.whatsapp%2FWhatsApp%2FMedia%2F.Statuses"
+const val MediaDir = "Android%2Fmedia%2Fcom.whatsapp%2FWhatsApp%2FMedia%2F"
+
+
 @RequiresApi(Build.VERSION_CODES.Q)
-fun AppCompatActivity.requestPermissionQ(activityResultLauncher: ActivityResultLauncher<Intent>) {
+fun AppCompatActivity.requestPermissionQ(
+    activityResultLauncher: ActivityResultLauncher<Intent>,
+    directory: String
+) {
     val sm = getSystemService(Context.STORAGE_SERVICE) as StorageManager
     val intent =
         sm.primaryStorageVolume.createOpenDocumentTreeIntent()
 
-    val startDir = "Android%2Fmedia%2Fcom.whatsapp%2FWhatsApp%2FMedia"
     var uri = intent.getParcelableExtra<Uri>("android.provider.extra.INITIAL_URI")
     var scheme = uri.toString()
     scheme = scheme.replace("/root/", "/document/")
-    scheme += "%3A$startDir"
+    scheme += "%3A$directory"
     uri = Uri.parse(scheme)
-    Log.d("URI", uri.toString())
+    Log.d("requestPermissionQ", uri.toString())
     intent.putExtra("android.provider.extra.INITIAL_URI", uri)
     intent.flags = (Intent.FLAG_GRANT_READ_URI_PERMISSION
             or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
@@ -83,34 +98,19 @@ fun AppCompatActivity.requestPermissionQ(activityResultLauncher: ActivityResultL
     activityResultLauncher.launch(intent)
 }
 
-private val PERMISSIONS = arrayOf(
-    Manifest.permission.READ_EXTERNAL_STORAGE,
-    Manifest.permission.WRITE_EXTERNAL_STORAGE
-)
 
-fun AppCompatActivity.checkPermissionsWithPersisted(checkPersistedPermission: Boolean = false): Boolean {
-    if (isRPlus()) {
-        if (checkPersistedPermission) {
-            return contentResolver.persistedUriPermissions.size > 0
-        }
-        return true
-    } else {
-        for (permissions in PERMISSIONS) {
-            if (ActivityCompat.checkSelfPermission(
-                    applicationContext,
-                    permissions!!
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                return false
-            }
-        }
-        return true
-    }
-
+fun AppCompatActivity.checkPermissionsWithPersisted(checkWritePermission: Boolean = false): Boolean {
+    return if (isRPlus()) {
+        if (!checkWritePermission)
+            contentResolver.persistedUriPermissions.size > 0
+        else
+            hasPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    } else
+        hasPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
 }
 
 var actionOnPermission: ((granted: Boolean) -> Unit)? = null
- fun Context.handlePermission(
+fun Context.handlePermission(
     permissionId: String,
     callback: (granted: Boolean) -> Unit, permissionRequestLauncher: ActivityResultLauncher<String>
 ) {

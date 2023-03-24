@@ -3,6 +3,7 @@ package com.gmail.anubhavdas54.whatsdeleted.utils
 import android.app.ActivityManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -19,6 +20,8 @@ import java.io.File
  * Copyright (c) All rights reserved.
  */
 
+fun isRPlus() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+fun isSPlus() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
 
 @Suppress("SameParameterValue")
 fun AppCompatActivity.createNotificationChannel(
@@ -64,3 +67,7 @@ fun Context.startObserverService() {
 
 }
 
+val pendingIntentIMMutable = if (isSPlus())
+    PendingIntent.FLAG_IMMUTABLE
+else
+    PendingIntent.FLAG_UPDATE_CURRENT
