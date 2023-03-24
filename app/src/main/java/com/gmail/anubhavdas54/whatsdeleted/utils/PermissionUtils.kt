@@ -42,13 +42,13 @@ fun Context.hasNotificationAccess(): Boolean {
 
 
 fun AppCompatActivity.requestForPermissionsPersisted(
-    activityResultLauncher: ActivityResultLauncher<Intent>,
+    activityResultLauncher: ActivityResultLauncher<Intent>?,
     checkWritePermission: Boolean = false, directory: String = StatusDir
 ) {
     // If Android 10+
     if (isRPlus()) {
         if (!checkWritePermission)
-            requestPermissionQ(activityResultLauncher, directory)
+            activityResultLauncher?.let { requestPermissionQ(it, directory) }
         else
             ActivityCompat.requestPermissions(
                 this,
